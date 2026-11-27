@@ -206,14 +206,31 @@ export function login({ values = {}, error } = {}) {
   });
 }
 
+// Formulaire + photo annotée à côté (nouvelle séance, profil).
+const formPage = ({ back, label, title, side, body }) => html`
+  <section class="form-page">
+    <div class="form-col">
+      ${back ? html`<a href="/tableau" class="back">[← mes séances]</a>` : ''}
+      ${tag(label)}
+      <h1 class="display-m">${title}</h1>
+      ${body}
+    </div>
+    ${side}
+  </section>`;
+
 export function profile({ teacher, values, error, flash, base }) {
   const v = values || teacher;
   return layout({
     title: 'Profil', teacher, flash,
-    body: html`
-    <section class="narrow">
-      ${tag('profil')}
-      <h1 class="serif-xl">Mon profil</h1>
+    body: formPage({
+      label: 'profil', title: 'Mon profil',
+      side: photo('peinture', {
+        className: 'side-photo', eager: true,
+        marks: note(1000, 330, ['votre page élève', 'commence ici'], { size: 66, rotate: -4, anchor: 'middle' }) +
+          arrow(1000, 440, 1060, 520, 990, 620),
+        children: html`<div class="side-taki">${taki('hello', { size: 120 })}</div>`,
+      }),
+      body: html`
       ${errorBox(error)}
       <form method="post" action="/profil" class="stack">
         ${field({ label: '[nom affiché]', name: 'name', value: v.name, required: true })}
@@ -223,54 +240,81 @@ export function profile({ teacher, values, error, flash, base }) {
           <span>[présentation, facultatif]</span>
           <textarea name="bio" rows="4" maxlength="600" placeholder="Hatha et vinyasa, tous niveaux. Cours au parc de la Tête d'Or et en visio.">${v.bio}</textarea>
         </label>
-        <button class="btn">Enregistrer</button>
-      </form>
-    </section>`,
+        <button class="btn big">Enregistrer</button>
+      </form>`,
+    }),
   });
 }
 
 // ---------- Tableau de bord du prof ----------
 
+// Jauge de remplissage d'une séance.
+const gauge = (c) => {
+  const pct = Math.min(100, Math.round((100 * c.booked) / c.capacity));
+  return html`<span class="gauge${c.booked >= c.capacity ? ' full' : ''}" aria-hidden="true"><span style="width:${pct}%"></span></span>`;
+};
+
 const classItem = (c) => html`
   <li>
-    <a href="/seances/${c.id}" class="row-item${c.cancelled_at ? ' cancelled' : ''}">
+    <a href="/seances/${c.id}" class="row-item class-row${c.cancelled_at ? ' cancelled' : ''}">
       <span class="when">${fmtDate(c.starts_at)}<br>${fmtTime(c.starts_at)}</span>
       <strong class="serif-title">${c.title}</strong>
-      <span class="count${!c.cancelled_at && c.booked >= c.capacity ? ' full' : ''}">
-        ${c.cancelled_at ? '[annulée]' : `${c.booked}/${c.capacity}`}
+      <span class="count-col">
+        <span class="count${!c.cancelled_at && c.booked >= c.capacity ? ' full' : ''}">
+          ${c.cancelled_at ? '[annulée]' : c.booked >= c.capacity ? 'complet !' : `${c.booked}/${c.capacity}`}
+        </span>
+        ${c.cancelled_at ? '' : gauge(c)}
       </span>
     </a>
   </li>`;
 
-function takiBrief(teacher, upcoming) {
+export function dashboard({ teacher, upcoming, past, publicUrl, flash }) {
   const first = teacher.name.trim().split(/\s+/)[0];
   const active = upcoming.filter((c) => !c.cancelled_at);
-  if (!active.length) return html`Salut ${first} ! Rien de prévu pour l'instant. Créez une séance, je m'occupe des inscriptions.`;
-  const next = active[0];
   const people = active.reduce((n, c) => n + c.booked, 0);
-  return html`Salut ${first} ! ${active.length === 1 ? '1 séance à venir' : `${active.length} séances à venir`},
-    ${people === 1 ? '1 élève inscrit·e' : `${people} élèves inscrit·e·s`}.
-    Prochaine séance <strong>${fmtDate(next.starts_at).toLowerCase()} à ${fmtTime(next.starts_at)}</strong>.
-    Je gère les confirmations.`;
-}
-
-export function dashboard({ teacher, upcoming, past, publicUrl, flash }) {
+  const next = active[0];
   return layout({
     title: 'Mes séances', teacher, flash,
     body: html`
-    ${takiSays('busy', takiBrief(teacher, upcoming))}
-    <section class="share">
-      ${tag('votre lien de réservation')}
-      <p>À partager à vos élèves : Instagram, WhatsApp, votre site.</p>
-      <div class="copy">
-        <input readonly value="${publicUrl}" id="public-url" aria-label="Lien de réservation">
-        <button type="button" class="btn small" data-copy="public-url">Copier</button>
-      </div>
-      <a href="${publicUrl}" target="_blank" rel="noopener">[voir ma page →]</a>
-    </section>
+    ${photo('vallee', {
+      className: 'band bleed', eager: true,
+      marks: loop(1000, 560, 160, 115) + arrow(1390, 590, 1280, 640, 1180, 590) +
+        note(1400, 600, ['votre semaine', 'commence ici'], { size: 66, rotate: -5 }),
+      children: html`<div class="band-copy">
+          <p class="tag light">[espace prof]</p>
+          <h1 class="display light">Salut ${first} !</h1>
+        </div>
+        <div class="band-taki">${taki('busy', { size: 130 })}</div>`,
+    })}
+
+    <ul class="stats">
+      <li class="stat lime"><span class="big-num">${active.length}</span><span class="tag">[${active.length === 1 ? 'séance à venir' : 'séances à venir'}]</span></li>
+      <li class="stat orange"><span class="big-num">${people}</span><span class="tag">[${people === 1 ? 'élève inscrit·e' : 'élèves inscrit·e·s'}]</span></li>
+      <li class="stat sky">${next
+        ? html`<span class="big-num">${fmtTime(next.starts_at)}</span><span class="tag">[prochaine : ${fmtDate(next.starts_at).toLowerCase()}]</span>`
+        : html`<span class="big-num">—</span><span class="tag">[rien de prévu]</span>`}</li>
+    </ul>
+
+    <div class="dash-grid">
+      <section class="share">
+        ${tag('votre lien de réservation')}
+        <p>À partager à vos élèves : Instagram, WhatsApp, votre site.</p>
+        <div class="copy">
+          <input readonly value="${publicUrl}" id="public-url" aria-label="Lien de réservation">
+          <button type="button" class="btn small" data-copy="public-url">Copier</button>
+        </div>
+        <a href="${publicUrl}" target="_blank" rel="noopener">[voir ma page →]</a>
+      </section>
+      <aside class="note-card">
+        ${taki('zen', { size: 90 })}
+        <p class="hand">${active.length
+          ? 'Je gère les confirmations et les annulations. Vous, préparez vos cours.'
+          : 'Rien de prévu ? Créez une séance, je m\'occupe des inscriptions.'}</p>
+      </aside>
+    </div>
 
     <div class="row">
-      <h1 class="serif-xl">Mes séances</h1>
+      <h2 class="display-m">Mes séances</h2>
       <a class="btn" href="/seances/nouvelle">+ Nouvelle séance</a>
     </div>
 
@@ -296,10 +340,15 @@ export function classForm({ teacher, values, error }) {
   const v = values;
   return layout({
     title: 'Nouvelle séance', teacher,
-    body: html`
-    <section class="narrow">
-      <a href="/tableau" class="back">[← mes séances]</a>
-      <h1 class="serif-xl">Nouvelle séance</h1>
+    body: formPage({
+      back: true, label: 'nouvelle séance', title: 'Nouvelle séance',
+      side: photo('route', {
+        className: 'side-photo', eager: true,
+        marks: loop(625, 968, 92, 72) + note(625, 1095, 'votre prochain cours', { size: 52, rotate: -3, anchor: 'middle' }) +
+          loop(905, 318, 74, 62) + note(815, 335, 'et le suivant', { size: 52, rotate: -5, anchor: 'end' }),
+        children: html`<div class="side-taki">${taki('busy', { size: 120 })}</div>`,
+      }),
+      body: html`
       ${errorBox(error)}
       <form method="post" action="/seances/nouvelle" class="stack">
         ${field({ label: '[nom du cours]', name: 'title', value: v.title, required: true, maxlength: 80, placeholder: 'Yoga doux', list: 'titles' })}
@@ -324,46 +373,58 @@ export function classForm({ teacher, values, error }) {
               ${n === 1 ? 'Une seule fois' : `Chaque semaine, ${n} fois`}</option>`)}
           </select>
         </label>
-        <button class="btn">Créer la séance</button>
+        <button class="btn big">Créer la séance</button>
       </form>
-      ${v.titles?.length ? html`<datalist id="titles">${v.titles.map((t) => html`<option value="${t}">`)}</datalist>` : ''}
-    </section>`,
+      ${v.titles?.length ? html`<datalist id="titles">${v.titles.map((t) => html`<option value="${t}">`)}</datalist>` : ''}`,
+    }),
   });
 }
 
 export function classDetail({ teacher, c, bookings, isPast, flash }) {
   const emails = bookings.map((b) => b.email).join(', ');
+  const full = c.booked >= c.capacity;
   return layout({
     title: c.title, teacher, flash,
     body: html`
-    <section>
-      <a href="/tableau" class="back">[← mes séances]</a>
-      <h1 class="serif-xl">${c.title}${c.cancelled_at ? html` <span class="tag">[annulée]</span>` : ''}</h1>
-      <p class="meta"><span>${fmtDate(c.starts_at)}</span>${classMeta(c)}</p>
-      ${c.description ? html`<p class="desc">${c.description}</p>` : ''}
+    <a href="/tableau" class="back">[← mes séances]</a>
+    <section class="detail">
+      <article class="class-card">
+        ${tag(c.cancelled_at ? 'séance annulée' : isPast ? 'séance passée' : 'séance')}
+        <h1 class="display-m">${c.title}</h1>
+        <dl class="facts">
+          <dt>[quand]</dt><dd>${fmtDate(c.starts_at)} · ${fmtTime(c.starts_at)} · ${fmtDuration(c.duration_min)}</dd>
+          ${c.location ? html`<dt>[où]</dt><dd>${c.location}</dd>` : ''}
+          ${c.price_cents != null ? html`<dt>[prix]</dt><dd>${fmtPrice(c.price_cents)}</dd>` : ''}
+          <dt>[remplissage]</dt><dd class="fill-dd">${c.booked}/${c.capacity} ${gauge(c)}</dd>
+        </dl>
+        ${c.description ? html`<p class="desc">${c.description}</p>` : ''}
+        <div class="actions">
+          <a class="btn ghost" href="/seances/nouvelle?depuis=${c.id}">Dupliquer</a>
+          ${!isPast && !c.cancelled_at ? html`
+          <form method="post" action="/seances/${c.id}/annuler"
+            data-confirm="Annuler cette séance ? ${c.booked ? `Les ${c.booked} inscrit·e·s seront prévenu·e·s par email.` : ''}">
+            <button class="btn ghost danger">Annuler la séance</button>
+          </form>` : ''}
+        </div>
+        ${full && !c.cancelled_at ? html`<span class="sticker sun small-sun" aria-hidden="true"><span>complet !</span></span>` : ''}
+      </article>
 
-      <div class="row">
-        <h2 class="serif-l">Inscrits <span class="tag">[${c.booked}/${c.capacity}]</span></h2>
-        ${bookings.length ? html`<button type="button" class="btn small ghost" data-copy-text="${emails}">Copier les emails</button>` : ''}
-      </div>
-      ${bookings.length
-        ? html`<ul class="ruled-list people">${bookings.map((b) => html`
-            <li class="row-item">
-              <div><strong>${b.name}</strong><span class="muted">${b.email}</span></div>
-              ${!isPast && !c.cancelled_at ? html`
-              <form method="post" action="/seances/${c.id}/retirer/${b.id}" data-confirm="Retirer ${b.name} de la séance ? Un email lui sera envoyé.">
-                <button class="link danger">[retirer]</button>
-              </form>` : ''}
-            </li>`)}</ul>`
-        : html`<div class="empty">${taki('sleepy', { size: 100 })}<p>Personne pour l'instant. Partagez votre lien, Taki veille !</p></div>`}
-
-      <div class="actions">
-        <a class="btn ghost" href="/seances/nouvelle?depuis=${c.id}">Dupliquer</a>
-        ${!isPast && !c.cancelled_at ? html`
-        <form method="post" action="/seances/${c.id}/annuler"
-          data-confirm="Annuler cette séance ? ${c.booked ? `Les ${c.booked} inscrit·e·s seront prévenu·e·s par email.` : ''}">
-          <button class="btn ghost danger">Annuler la séance</button>
-        </form>` : ''}
+      <div class="people-col">
+        <div class="row">
+          <h2 class="display-m">Inscrits</h2>
+          ${bookings.length ? html`<button type="button" class="btn small ghost" data-copy-text="${emails}">Copier les emails</button>` : ''}
+        </div>
+        ${bookings.length
+          ? html`<ul class="ruled-list people">${bookings.map((b) => html`
+              <li class="row-item">
+                <div><strong>${b.name}</strong><span class="muted">${b.email}</span></div>
+                ${!isPast && !c.cancelled_at ? html`
+                <form method="post" action="/seances/${c.id}/retirer/${b.id}" data-confirm="Retirer ${b.name} de la séance ? Un email lui sera envoyé.">
+                  <button class="link danger">[retirer]</button>
+                </form>` : ''}
+              </li>`)}</ul>
+            <p class="hand taki-line">${taki('busy', { size: 54, label: '' })}Taki envoie les confirmations et prévient en cas d'annulation.</p>`
+          : html`<div class="empty">${taki('sleepy', { size: 100 })}<p>Personne pour l'instant. Partagez votre lien, Taki veille !</p></div>`}
       </div>
     </section>
     ${copyScript}`,
