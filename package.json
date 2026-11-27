@@ -12,6 +12,6 @@
     "dev": "node --watch src/server.js",
     "demo": "node scripts/serve-demo.js",
     "build:static": "node scripts/build-static.js",
-    "test": "node --test test/"
+    "test": "node --test \"test/**/*.test.js\""
   }
 }
