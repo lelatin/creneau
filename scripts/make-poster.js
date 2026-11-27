@@ -1,4 +1,4 @@
-// Fabrique l'affiche du questionnaire (PNG 1080×1350) et le QR code seul (SVG).
+// Fabrique l'affiche du questionnaire (PNG 1080×1920, format story) et le QR code seul (SVG).
 // Usage : node scripts/make-poster.js   (outil local : il faut Microsoft Edge installé)
 //
 // L'affiche est composée en HTML (polices, Taki, QR code), puis Edge en mode sans
@@ -22,42 +22,47 @@ if (check.text !== URL_QUESTIONNAIRE) throw new Error('QR code incohérent');
 const img = path.join(root, 'public', 'img');
 fs.writeFileSync(path.join(img, 'qr-questionnaire.svg'), qrSvg(URL_QUESTIONNAIRE, { module: 20 }));
 
-const qr = qrSvg(URL_QUESTIONNAIRE, { module: 12 }).replace('<svg ', '<svg class="qr" ');
+const qr = qrSvg(URL_QUESTIONNAIRE, { module: 12, light: '#fdf8ea' }).replace('<svg ', '<svg class="qr" ');
 const shortUrl = URL_QUESTIONNAIRE.replace(/^https:\/\//, '');
+const BG = pathToFileURL(path.join(img, 'collines.jpg')).href; // photo de fond
 
 const page = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.bunny.net/css?family=anton:400|instrument-sans:400,600|dm-mono:400,500|caveat:700&display=block">
+<link rel="stylesheet" href="https://fonts.bunny.net/css?family=anton:400|instrument-sans:500,600,700|dm-mono:400,500&display=block">
 <style>
   * { box-sizing: border-box; margin: 0; }
-  html, body { width: 1080px; height: 1350px; overflow: hidden; }
-  body { background: #f0ff2a; color: #111110; font-family: "Instrument Sans", sans-serif; position: relative; padding: 70px 80px; }
-  .tag { font-family: "DM Mono", monospace; font-size: 26px; }
-  h1 { font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; font-size: 148px; line-height: .9; margin: 26px 0 22px; letter-spacing: .005em; }
-  .sub { font-size: 34px; line-height: 1.25; max-width: 760px; }
-  .card { position: absolute; left: 110px; top: 640px; background: #fff; border: 5px solid #111110; border-radius: 34px;
-          padding: 18px; transform: rotate(-3deg); box-shadow: 16px 16px 0 #ff5b23; }
-  .qr { display: block; width: 470px; height: 470px; }
-  .note { position: absolute; left: 640px; top: 690px; font-family: Caveat, cursive; font-weight: 700; font-size: 70px; line-height: .95; transform: rotate(-6deg); }
-  .arrow { position: absolute; left: 600px; top: 840px; width: 170px; height: 150px; }
-  .taki { position: absolute; right: 60px; bottom: 120px; }
-  .sun { position: absolute; right: 70px; top: 470px; width: 190px; height: 190px; display: grid; place-items: center; text-align: center;
-         background: #ff5b23; color: #fff; font-family: Caveat, cursive; font-weight: 700; font-size: 44px; line-height: .95; transform: rotate(12deg);
-         clip-path: polygon(50% 0, 61% 12%, 75% 4%, 79% 19%, 95% 21%, 90% 36%, 100% 50%, 90% 64%, 95% 79%, 79% 81%, 75% 96%, 61% 88%, 50% 100%, 39% 88%, 25% 96%, 21% 81%, 5% 79%, 10% 64%, 0 50%, 10% 36%, 5% 21%, 21% 19%, 25% 4%, 39% 12%); }
-  .foot { position: absolute; left: 80px; right: 80px; bottom: 56px; display: flex; justify-content: space-between; align-items: baseline;
-          border-top: 4px solid #111110; padding-top: 18px; }
-  .brand { font-family: Anton, Impact, sans-serif; font-size: 44px; text-transform: uppercase; }
-  .url { font-family: "DM Mono", monospace; font-size: 24px; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body {
+    font-family: "Instrument Sans", sans-serif; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    /* fond : une photo de nature du site (les collines), assombrie pour faire ressortir la carte */
+    background:
+      linear-gradient(180deg, rgba(8, 26, 14, .55), rgba(8, 26, 14, .25) 45%, rgba(8, 26, 14, .7)),
+      url("${BG}") center 70% / cover no-repeat, #10301e;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; font-family: Anton, Impact, sans-serif; font-size: 66px; text-transform: uppercase; letter-spacing: .01em; }
+  .brand b { color: #f0ff2a; font-weight: 400; }
+  .baseline { font-weight: 600; font-size: 25px; opacity: .85; margin: 6px 0 46px; }
+  .card { position: relative; width: 600px; background: #fdf8ea; color: #111110; border: 5px solid #111110; border-radius: 40px;
+          padding: 56px 50px 44px; text-align: center; transform: rotate(-1.5deg); box-shadow: 14px 14px 0 #071a10; }
+  .qr { display: block; width: 390px; height: 390px; margin: 0 auto; }
+  .sticker { position: absolute; right: -26px; top: -30px; background: #ff5b23; color: #111110; border: 5px solid #111110; border-radius: 999px;
+             padding: 10px 24px; font-weight: 700; font-size: 30px; transform: rotate(5deg); box-shadow: 6px 6px 0 #111110; }
+  h1 { font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 62px; line-height: 1; text-transform: uppercase; margin: 26px 0 14px; }
+  .meta { font-weight: 600; font-size: 28px; }
+  .meta2 { font-weight: 500; font-size: 24px; color: #5f6157; margin-top: 8px; font-family: "DM Mono", monospace; }
+  .tagline { margin-top: 64px; background: #f0ff2a; color: #111110; font-weight: 700; font-size: 44px; padding: 10px 22px 12px; border-radius: 10px; transform: rotate(-1deg); }
+  .url { margin-top: 26px; font-weight: 600; font-size: 26px; opacity: .85; }
 </style></head><body>
-  <p class="tag">[créneau · pour les lieux de yoga, pilates, méditation…]</p>
-  <h1>Parlez-nous<br>de votre lieu.</h1>
-  <p class="sub">10 minutes pour nous aider à construire l'outil qui gère les réservations de votre lieu. Aucun compte à créer.</p>
-  <div class="sun"><span>10<br>minutes</span></div>
-  <div class="card">${qr}</div>
-  <p class="note">scannez-<br>moi !</p>
-  <svg class="arrow" viewBox="0 0 170 150" fill="none" stroke="#111110" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M150 10 C140 80 90 120 20 128"/><path d="M48 104 L20 128 L52 146"/></svg>
-  ${String(taki('busy', { size: 300, label: '' }))}
-  <div class="foot"><span class="brand">Créneau</span><span class="url">${shortUrl}</span></div>
+  <div class="brand">${String(taki('hello', { size: 74, label: '' }))}<span>Cré<b>neau</b></span></div>
+  <p class="baseline">Réservation de cours · pour les lieux et les profs</p>
+  <div class="card">
+    <span class="sticker">Scannez-moi ✦</span>
+    ${qr}
+    <h1>Parlez-nous<br>de votre lieu</h1>
+    <p class="meta">Questionnaire · 10 minutes</p>
+    <p class="meta2">[yoga · pilates · méditation…]</p>
+  </div>
+  <p class="tagline">Taki s'occupe du reste.</p>
+  <p class="url">${shortUrl}</p>
 </body></html>`;
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'creneau-affiche-'));
@@ -67,7 +72,7 @@ const out = path.join(img, 'affiche-questionnaire.png');
 fs.rmSync(out, { force: true });
 // Profil temporaire séparé : sinon Edge se rattache à une fenêtre déjà ouverte et ne capture rien.
 execFileSync(EDGE, ['--headless=new', `--user-data-dir=${path.join(tmp, 'profil')}`, '--no-first-run', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
-  '--window-size=1080,1350', '--virtual-time-budget=8000', `--screenshot=${out}`, pathToFileURL(htmlFile).href], { stdio: 'ignore', timeout: 60000 });
+  '--window-size=1080,1920', '--virtual-time-budget=8000', `--screenshot=${out}`, pathToFileURL(htmlFile).href], { stdio: 'ignore', timeout: 60000 });
 // Edge peut rendre la main avant d'avoir fini d'écrire la capture : on l'attend un peu.
 for (let i = 0; i < 40 && !fs.existsSync(out); i++) await new Promise((r) => setTimeout(r, 250));
 if (!fs.existsSync(out)) throw new Error("Edge n'a pas produit l'affiche");
