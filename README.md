@@ -68,7 +68,7 @@ Une page autonome à donner aux gérant·e·s de lieux : **https://lelatin.githu
 messagerie avec les réponses déjà rédigées, adressées à l'adresse réglée en haut de `src/questionnaire.js`.
 Rien n'est stocké par Créneau : un brouillon reste dans le navigateur jusqu'à l'envoi.
 
-L'affiche à imprimer ou partager (QR code) est dans `public/img/affiche-questionnaire.png`, le QR code seul
+L'affiche verticale (1080 × 1920, format story) à partager ou imprimer, avec QR code, est dans `public/img/affiche-questionnaire.png`, le QR code seul
 dans `public/img/qr-questionnaire.svg`. Pour les refaire : `node scripts/make-poster.js` (il faut Microsoft Edge).
 
 ### Variables d'environnement
