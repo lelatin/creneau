@@ -1,11 +1,16 @@
 import { html } from './html.js';
 import { taki, takiSays } from './taki.js';
 import { photo, loop, arrow, note } from './scribble.js';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fmtDate, fmtTime, fmtDuration, fmtPrice } from './util.js';
 
-// Identité V2 : éditoriale et calme. Grands titres en serif, petites étiquettes
-// façon machine à écrire entre crochets, listes à filets, papiers colorés posés
-// de travers et Taki dessiné au trait.
+// Empreinte de la feuille de style : quand elle change, l'adresse change,
+// et les navigateurs rechargent le style au lieu de garder l'ancien en cache.
+const STYLE_V = createHash('sha1').update(readFileSync(new URL('../public/style.css', import.meta.url))).digest('hex').slice(0, 8);
+
+// Identité : couleurs vives, photos de nature annotées à main levée, capitales serrées,
+// étiquettes façon machine à écrire entre crochets, listes à filets et Taki au trait.
 
 // ---------- Mise en page ----------
 
@@ -32,7 +37,7 @@ export function layout({ title, teacher, body, flash, publicPage = false }) {
 <link rel="icon" href="/taki.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link rel="stylesheet" href="https://fonts.bunny.net/css?family=anton:400|instrument-sans:400,500,600,700|dm-mono:400,500|caveat:600,700&display=swap">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=${STYLE_V}">
 </head>
 <body${publicPage ? html` class="public"` : ''}>
 ${publicPage ? '' : html`<header class="top">
