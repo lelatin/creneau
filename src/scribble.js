@@ -42,10 +42,11 @@ const scribbleFilter = `<defs><filter id="scribble" x="-5%" y="-5%" width="110%"
 </filter></defs>`;
 
 // Photo + calque d'annotations. ink : couleur du feutre.
-export function photo(name, { marks = '', ink = '#fff', className = '', children = '', position = 'center' } = {}) {
+// eager : photo du haut de page, chargée en priorité (les autres se chargent au défilement).
+export function photo(name, { marks = '', ink = '#fff', className = '', children = '', position = 'center', eager = false } = {}) {
   const p = PHOTOS[name];
   return html`<figure class="photo ${className}">
-    <img src="/img/${name}.jpg" alt="${p.alt}" width="${p.w}" height="${p.h}" loading="lazy" style="object-position:${position}">
+    <img src="/img/${name}.jpg" alt="${p.alt}" width="${p.w}" height="${p.h}" loading="${eager ? 'eager' : 'lazy'}"${eager ? html` fetchpriority="high"` : ''} style="object-position:${position}">
     ${marks ? raw(`<svg class="scribbles" viewBox="0 0 ${p.w} ${p.h}" preserveAspectRatio="${position === 'center' ? 'xMidYMid' : 'xMidYMax'} slice" aria-hidden="true">
       ${scribbleFilter}
       <g filter="url(#scribble)" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">

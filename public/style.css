@@ -309,6 +309,7 @@ details.past summary { cursor: pointer; color: var(--muted); margin-bottom: 8px;
   .idcard { grid-template-columns: 1fr; justify-items: center; }
   .idcard-pic { width: 120px; height: 130px; }
   .auth-photo { height: 340px; }
+  .pub-photo .scribbles { display: none; } /* photo très recadrée : la note sortirait du cadre */
   .hero-photo .sticker { top: auto; bottom: 20px; width: 120px; height: 120px; font-size: 1.1rem; }
   .bleed { width: calc(100vw - 20px); }
   .photo { border-radius: 20px; }
