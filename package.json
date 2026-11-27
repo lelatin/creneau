@@ -1,0 +1,16 @@
+{
+  "name": "creneau",
+  "version": "0.1.0",
+  "description": "Réservation de cours ultra simple pour les profs de yoga, pilates et coachs indépendants.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "demo": "node scripts/serve-demo.js",
+    "test": "node --test test/"
+  }
+}
