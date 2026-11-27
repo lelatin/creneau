@@ -7,7 +7,7 @@ import { html, raw } from './html.js';
 // Le léger tremblé vient d'un filtre SVG, pour garder un côté fait main.
 
 const INK = '#1b1b18';
-const LIME = '#E8F27A'; // citron vert adouci, en accord avec la palette sauge / sable / bleu poudré
+const LIME = '#F0FF2A'; // citron vert vif, la couleur de Créneau
 
 const wobble = `<defs><filter id="taki-wobble" x="-10%" y="-10%" width="120%" height="120%">
   <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="n"/>

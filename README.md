@@ -26,10 +26,12 @@ Le prof crée ses séances et partage **un seul lien**. Les élèves réservent 
 
 ## Identité visuelle
 
-Éditoriale, calme et un brin malicieuse : fond papier, grands titres en serif fin (Instrument Serif),
-petites étiquettes façon machine à écrire [entre crochets] (DM Mono), texte en Instrument Sans,
-listes séparées par des filets, papiers colorés posés de travers (sauge, bleu poudré, sable) et une touche
-de citron vert. Les polices sont servies par Bunny Fonts (hébergé en Europe, sans traçage).
+Vive, nature et « prise de notes » : grandes photos de paysages qui apaisent, annotées à main levée
+(boucles, flèches et mots manuscrits tracés au feutre par-dessus, voir `src/scribble.js`), gros titres
+en capitales serrées (Anton), étiquettes façon machine à écrire [entre crochets] (DM Mono), texte en
+Instrument Sans, notes en Caveat. Couleurs : citron vert acide `#F0FF2A`, orange autocollant `#FF5B23`,
+vert forêt `#10301E`, bleu ciel, blanc et encre. Les polices sont servies par Bunny Fonts (hébergé en
+Europe, sans traçage). Les photos sont dans `public/img/`.
 
 **Taki** est la mascotte : une petite graine sereine, une pousse à deux feuilles sur la tête, dessinée d'un trait
 d'encre avec des membres épais au contour, en postures de yoga. C'est lui qui « s'occupe de tout » (inscriptions,
@@ -78,6 +80,7 @@ Volontairement minimal pour aller vite et rester facile à héberger :
 src/server.js   routes et logique
 src/views.js    pages HTML
 src/taki.js     Taki, la mascotte (SVG dessiné à la main, 6 poses)
+src/scribble.js photos annotées à main levée
 scripts/build-static.js   génère l'aperçu statique docs/
 src/db.js       schéma et requêtes SQLite
 src/auth.js     comptes et sessions

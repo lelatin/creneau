@@ -1,5 +1,6 @@
 import { html } from './html.js';
 import { taki, takiSays } from './taki.js';
+import { photo, loop, arrow, note } from './scribble.js';
 import { fmtDate, fmtTime, fmtDuration, fmtPrice } from './util.js';
 
 // Identité V2 : éditoriale et calme. Grands titres en serif, petites étiquettes
@@ -30,7 +31,7 @@ export function layout({ title, teacher, body, flash, publicPage = false }) {
 <title>${title ? `${title} · ` : ''}Créneau</title>
 <link rel="icon" href="/taki.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.bunny.net">
-<link rel="stylesheet" href="https://fonts.bunny.net/css?family=instrument-serif:400,400i|instrument-sans:400,500,600|dm-mono:400,500&display=swap">
+<link rel="stylesheet" href="https://fonts.bunny.net/css?family=anton:400|instrument-sans:400,500,600,700|dm-mono:400,500|caveat:600,700&display=swap">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body${publicPage ? html` class="public"` : ''}>
@@ -75,69 +76,95 @@ const classMeta = (c) => html`
 export function home() {
   return layout({
     body: html`
-    <section class="hero">
-      <p class="tag center">[réservation de cours pour profs de yoga, de pilates et coachs indépendants]</p>
-      <h1 class="display">Vous donnez cours.<br><em>Taki</em> s'occupe du reste.</h1>
-      <div class="hero-paper">
-        ${taki('zen', { size: 230 })}
-        <article class="idcard">
-          <div class="idcard-pic">${taki('hello', { size: 120, label: '' })}</div>
-          <dl>
-            <dt>[nom]</dt><dd class="serif">Taki</dd>
-            <dt>[métier]</dt><dd>Assistant de réservation</dd>
-            <dt>[s'occupe de]</dt><dd>Inscriptions, confirmations, places, annulations</dd>
-            <dt>[devise]</dt><dd>Vous enseignez, je gère la logistique.</dd>
-          </dl>
-        </article>
+    ${photo('collines', {
+      className: 'hero-photo bleed',
+      marks: loop(1215, 902, 120, 48) + arrow(1560, 1040, 1420, 1060, 1345, 930) +
+        note(1575, 1065, ['vos élèves,', 'bien rangé·e·s'], { size: 58, rotate: -5 }),
+      children: html`<div class="hero-copy">
+        <p class="tag light">[réservation de cours pour profs de yoga, de pilates et coachs indépendants]</p>
+        <h1 class="display">Vous donnez cours.<br><span class="hl">Taki</span> s'occupe du reste.</h1>
+        <a class="btn big lime" href="/inscription">Créer mon espace</a>
       </div>
-      <div class="hero-cta">
-        <a class="btn big" href="/inscription">Créer mon espace</a>
-        <span class="tag">[gratuit · prêt en 2 minutes · sans carte bancaire]</span>
+      <span class="sticker sun" aria-hidden="true"><span>gratuit<br>& prêt en<br>2 min</span></span>`,
+    })}
+
+    <section class="intro">
+      <div class="intro-taki">${taki('hello', { size: 190 })}</div>
+      <div>
+        <p class="tag">[salut, moi c'est Taki]</p>
+        <h2 class="display-m">Un·e indépendant·e ne devrait pas jongler avec tout ça.</h2>
+        <p class="lead">Les messages « il reste une place ? », les listes sur papier, les rappels…
+          Vous créez vos séances, vous partagez un lien, et Taki gère les inscriptions,
+          les confirmations et les annulations.</p>
       </div>
     </section>
 
-    <section class="notes-section">
-      <div class="section-head">
-        <h2 class="serif-xl">Ce que Taki fait<br>pour vous</h2>
-        <p>Un·e indépendant·e ne devrait pas jongler avec les messages « il reste une place ? »,
-          les listes sur papier et les rappels. Taki s'en charge, vous respirez.</p>
-      </div>
-      <ul class="notes">
-        <li class="note sage">Une page de réservation, prête en 2 minutes</li>
-        <li class="note blue">Vos élèves réservent sans compte : un nom, un email</li>
-        <li class="note sand">Les places sont tenues à jour, le cours complet se ferme seul</li>
-        <li class="note lime">Confirmations et annulations envoyées par email</li>
-        <li class="note blue">Au parc, en salle, à domicile ou en visio</li>
-      </ul>
-    </section>
+    <ul class="notes">
+      <li class="note lime">Une page de réservation, prête en 2 minutes</li>
+      <li class="note orange">Vos élèves réservent sans compte : un nom, un email</li>
+      <li class="note forest">Les places sont tenues à jour, le cours complet se ferme seul</li>
+      <li class="note sky">Confirmations et annulations envoyées par email</li>
+      <li class="note white">Au parc, en salle, à domicile ou en visio</li>
+    </ul>
+
+    ${photo('route', {
+      className: 'week bleed',
+      marks: loop(625, 968, 92, 72) + note(735, 1078, 'lun. yoga doux', { size: 50, rotate: -3 }) +
+        loop(905, 318, 74, 62) + note(990, 250, 'mer. pilates', { size: 50, rotate: -6 }) +
+        arrow(1180, 120, 1330, 40, 1440, 112) + note(1060, 150, 'dim. repos !', { size: 50, rotate: -4 }) +
+        arrow(70, 300, 30, 380, 52, 455) + note(36, 280, 'lundi matin', { size: 46, rotate: -8 }),
+      children: html`<div class="week-copy">
+        <h2 class="display-m light">Votre semaine,<br>sans détour.</h2>
+        <p class="tag light">[taki suit chaque virage pour vous]</p>
+      </div>`,
+    })}
 
     <section class="steps">
-      <h2 class="serif-xl">Comment ça marche</h2>
+      <h2 class="display-m">Comment ça marche</h2>
       <ol class="ruled">
-        <li><span class="tag">[1]</span><span>Vous créez vos séances</span><span class="serif-num">2 min</span></li>
-        <li><span class="tag">[2]</span><span>Vous partagez un seul lien (Instagram, WhatsApp, votre site)</span><span class="serif-num">1 clic</span></li>
-        <li><span class="tag">[3]</span><span>Vos élèves réservent, Taki gère le reste</span><span class="serif-num">0 souci</span></li>
+        <li><span class="tag">[1]</span><span>Vous créez vos séances</span><span class="big-num">2 min</span></li>
+        <li><span class="tag">[2]</span><span>Vous partagez un seul lien (Instagram, WhatsApp, votre site)</span><span class="big-num">1 clic</span></li>
+        <li><span class="tag">[3]</span><span>Vos élèves réservent, Taki gère le reste</span><span class="big-num">0 souci</span></li>
       </ol>
     </section>
 
+    ${photo('sommet', {
+      className: 'calm-photo bleed',
+      marks: loop(1332, 872, 48, 74) + arrow(1560, 690, 1420, 700, 1372, 800) +
+        note(1490, 610, ['vous, le dimanche soir.', 'rien à préparer.'], { size: 56, rotate: -4 }),
+      children: html`<div class="calm-copy">
+        <p class="tag light">[pendant ce temps]</p>
+        <h2 class="display-m light">Taki tient la liste.<br>Vous, respirez.</h2>
+      </div>`,
+    })}
+
     <section class="poses">
-      <figure class="pose sage">${taki('zen', { size: 150 })}<figcaption>[respirer]<br>Vous préparez votre cours.</figcaption></figure>
-      <figure class="pose blue">${taki('busy', { size: 150 })}<figcaption>[noter]<br>Taki tient la liste des inscrits.</figcaption></figure>
-      <figure class="pose sand">${taki('party', { size: 150 })}<figcaption>[se réjouir]<br>Le cours est complet !</figcaption></figure>
+      <figure class="pose lime">${taki('zen', { size: 150 })}<figcaption>[respirer]<br>Vous préparez votre cours.</figcaption></figure>
+      <figure class="pose sky">${taki('busy', { size: 150 })}<figcaption>[noter]<br>Taki tient la liste des inscrits.</figcaption></figure>
+      <figure class="pose orange">${taki('party', { size: 150 })}<figcaption>[se réjouir]<br>Le cours est complet !</figcaption></figure>
     </section>
 
-    <section class="closing">
-      <h2 class="display small">Moins de logistique,<br><em>plus de cours.</em></h2>
-      <a class="btn big" href="/inscription">Essayer avec Taki</a>
-    </section>`,
+    ${photo('brume', {
+      className: 'closing bleed',
+      marks: arrow(1240, 760, 1060, 820, 920, 1010) + note(1260, 760, ['même la rivière', 'ne se presse pas'], { size: 54, rotate: -3 }),
+      children: html`<div class="closing-copy">
+        <h2 class="display">Moins de logistique.<br>Plus de cours.</h2>
+        <a class="btn big" href="/inscription">Essayer avec Taki</a>
+      </div>`,
+    })}`,
   });
 }
 
 const authPage = ({ title, pose, say, body }) => html`
   <section class="auth">
-    <aside class="auth-paper">${taki(pose, { size: 170 })}<p>${say}</p></aside>
+    ${photo('vallee', {
+      className: 'auth-photo',
+      marks: loop(1000, 560, 150, 110) + arrow(1060, 820, 1100, 760, 1035, 690) +
+        note(1000, 890, say, { size: 66, rotate: -4, anchor: 'middle' }),
+      children: html`<div class="auth-taki">${taki(pose, { size: 140 })}</div>`,
+    })}
     <div class="auth-form">
-      <h1 class="serif-xl">${title}</h1>
+      <h1 class="display-m">${title}</h1>
       ${body}
     </div>
   </section>`;
@@ -147,7 +174,7 @@ export function signup({ values = {}, error } = {}) {
     title: 'Créer mon espace',
     body: authPage({
       title: 'Créer mon espace', pose: 'hello',
-      say: html`Trois champs et je prépare votre page. Promis, c'est rapide.`,
+      say: ['trois champs', 'et je prépare', 'votre page !'],
       body: html`
       ${errorBox(error)}
       <form method="post" action="/inscription" class="stack">
@@ -166,7 +193,7 @@ export function login({ values = {}, error } = {}) {
     title: 'Connexion',
     body: authPage({
       title: 'Connexion', pose: 'zen',
-      say: html`Re-bonjour ! Tout est en ordre, je vous attendais.`,
+      say: ['re-bonjour !', 'tout est en ordre,', 'respirez.'],
       body: html`
       ${errorBox(error)}
       <form method="post" action="/connexion" class="stack">
@@ -370,7 +397,11 @@ export function publicPage({ teacher, classes }) {
     title: teacher.name, publicPage: true,
     body: html`
     <header class="pub-head">
-      <h1 class="display small">${teacher.name}</h1>
+      ${photo('peinture', {
+        className: 'pub-photo bleed',
+        marks: note(1230, 560, 'on se retrouve ici ?', { size: 64, rotate: -5 }) + arrow(1560, 600, 1660, 660, 1610, 800),
+        children: html`<h1 class="display light">${teacher.name}</h1>`,
+      })}
       <article class="idcard">
         <div class="idcard-pic avatar" aria-hidden="true">${teacher.name.trim().charAt(0).toUpperCase()}</div>
         <dl>
@@ -475,9 +506,15 @@ export function bookingPage({ teacher, c, booking, justBooked, flash }) {
 export function notFound(teacher) {
   return layout({
     title: 'Page introuvable', teacher,
-    body: html`<section class="notfound">${taki('oops', { size: 170 })}
-      <h1 class="display small">Oups.</h1>
-      <p>Taki a cherché partout : ce lien n'existe pas ou plus.</p>
-      <p><a href="/">[retour à l'accueil]</a></p></section>`,
+    body: html`${photo('brume', {
+      className: 'notfound bleed',
+      marks: loop(880, 1010, 160, 120) + note(1100, 1080, ['Taki a cherché', 'jusqu\'ici…'], { size: 58, rotate: -4 }),
+      children: html`<div class="notfound-copy">
+        ${taki('oops', { size: 140 })}
+        <h1 class="display">Perdu·e dans la brume ?</h1>
+        <p>Ce lien n'existe pas ou plus.</p>
+        <a class="btn" href="/">Retour à l'accueil</a>
+      </div>`,
+    })}`,
   });
 }
