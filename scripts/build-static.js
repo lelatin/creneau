@@ -132,6 +132,43 @@ fs.copyFileSync(path.join(root, 'public', 'style.css'), path.join(OUT, 'style.cs
 fs.writeFileSync(path.join(OUT, 'taki.svg'), (await get('/taki.svg')).text);
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
 
+// Page d'entrée à la racine du dépôt : si GitHub Pages sert la racine de main
+// (au lieu de docs/), elle affiche Taki et ouvre aussitôt l'aperçu.
+fs.writeFileSync(path.join(root, 'index.html'), `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créneau · Taki s'occupe du reste</title>
+<meta http-equiv="refresh" content="0; url=docs/index.html">
+<link rel="icon" href="docs/taki.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link rel="stylesheet" href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,700,800&display=swap">
+<link rel="stylesheet" href="docs/style.css">
+<style>
+  .entry { min-height: 100vh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 6px; padding: 24px; }
+  .entry h1 { font-size: 2.6rem; margin: .2em 0 .1em; }
+  .entry .lead { max-width: 420px; }
+  .entry nav { flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+</style>
+</head>
+<body>
+<main class="entry">
+  ${taki('hello', { size: 180 })}
+  <h1>Créneau</h1>
+  <p class="lead">Vous donnez cours. <mark>Taki s'occupe du reste.</mark></p>
+  <a class="btn big" href="docs/index.html">Ouvrir l'aperçu</a>
+  <nav>
+    <a href="docs/camille-yoga.html">Page élève</a>
+    <a href="docs/tableau.html">Espace prof</a>
+    <a href="docs/taki.html">Taki</a>
+  </nav>
+</main>
+<script>location.replace('docs/index.html');</script>
+</body>
+</html>
+`);
+
 server.close();
 try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* base encore ouverte sous Windows : sans gravité */ }
 console.log = log;
