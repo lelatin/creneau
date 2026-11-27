@@ -77,7 +77,7 @@ export function home() {
   return layout({
     body: html`
     ${photo('collines', {
-      className: 'hero-photo bleed',
+      className: 'hero-photo bleed', eager: true,
       marks: loop(1215, 902, 120, 48) + arrow(1560, 1040, 1420, 1060, 1345, 930) +
         note(1575, 1065, ['vos élèves,', 'bien rangé·e·s'], { size: 58, rotate: -5 }),
       children: html`<div class="hero-copy">
@@ -158,7 +158,7 @@ export function home() {
 const authPage = ({ title, pose, say, body }) => html`
   <section class="auth">
     ${photo('vallee', {
-      className: 'auth-photo',
+      className: 'auth-photo', eager: true,
       marks: loop(1000, 560, 150, 110) + arrow(1060, 820, 1100, 760, 1035, 690) +
         note(1000, 890, say, { size: 66, rotate: -4, anchor: 'middle' }),
       children: html`<div class="auth-taki">${taki(pose, { size: 140 })}</div>`,
@@ -398,7 +398,7 @@ export function publicPage({ teacher, classes }) {
     body: html`
     <header class="pub-head">
       ${photo('peinture', {
-        className: 'pub-photo bleed',
+        className: 'pub-photo bleed', eager: true,
         marks: note(1230, 560, 'on se retrouve ici ?', { size: 64, rotate: -5 }) + arrow(1560, 600, 1660, 660, 1610, 800),
         children: html`<h1 class="display light">${teacher.name}</h1>`,
       })}
@@ -507,7 +507,7 @@ export function notFound(teacher) {
   return layout({
     title: 'Page introuvable', teacher,
     body: html`${photo('brume', {
-      className: 'notfound bleed',
+      className: 'notfound bleed', eager: true,
       marks: loop(880, 1010, 160, 120) + note(1100, 1080, ['Taki a cherché', 'jusqu\'ici…'], { size: 58, rotate: -4 }),
       children: html`<div class="notfound-copy">
         ${taki('oops', { size: 140 })}
