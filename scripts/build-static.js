@@ -57,7 +57,9 @@ const classIds = idsIn(dash.text, /href="\/seances\/(\d+)"/g);
 // Chemin de l'appli → fichier statique
 const SLUG = 'camille-yoga';
 function mapPath(p, { form = false } = {}) {
-  p = p.replace(PUBLIC_BASE, '').replace(/[?#].*$/, '') || '/';
+  p = p.replace(PUBLIC_BASE, '');
+  if (/^\/style\.css\?v=\w+$/.test(p)) return p.slice(1); // garde l'empreinte du style
+  p = p.replace(/[?#].*$/, '') || '/';
   if (p === '/') return 'index.html';
   if (p === '/style.css' || p === '/taki.svg' || /^\/img\/[a-z0-9-]+\.jpg$/.test(p)) return p.slice(1);
   if (p === '/connexion' || p === '/inscription') return form ? 'tableau.html' : `${p.slice(1)}.html`;
