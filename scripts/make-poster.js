@@ -24,6 +24,7 @@ fs.writeFileSync(path.join(img, 'qr-questionnaire.svg'), qrSvg(URL_QUESTIONNAIRE
 
 const qr = qrSvg(URL_QUESTIONNAIRE, { module: 12, light: '#fdf8ea' }).replace('<svg ', '<svg class="qr" ');
 const shortUrl = URL_QUESTIONNAIRE.replace(/^https:\/\//, '');
+const BG = pathToFileURL(path.join(img, 'collines.jpg')).href; // photo de fond
 
 const page = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <link rel="stylesheet" href="https://fonts.bunny.net/css?family=anton:400|instrument-sans:500,600,700|dm-mono:400,500&display=block">
@@ -32,14 +33,10 @@ const page = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
   html, body { width: 1080px; height: 1920px; overflow: hidden; }
   body {
     font-family: "Instrument Sans", sans-serif; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    /* fond vert forêt façon tapis de découpe : petit et grand quadrillage, une diagonale */
+    /* fond : une photo de nature du site (les collines), assombrie pour faire ressortir la carte */
     background:
-      linear-gradient(135deg, transparent calc(50% - 1px), rgba(240, 255, 42, .16) 50%, transparent calc(50% + 1px)),
-      linear-gradient(rgba(255,255,255,.16) 2px, transparent 2px) 0 0 / 240px 240px,
-      linear-gradient(90deg, rgba(255,255,255,.16) 2px, transparent 2px) 0 0 / 240px 240px,
-      linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 48px 48px,
-      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 48px 48px,
-      radial-gradient(circle at 20% 10%, #2a5a3a, #10301e 70%);
+      linear-gradient(180deg, rgba(8, 26, 14, .55), rgba(8, 26, 14, .25) 45%, rgba(8, 26, 14, .7)),
+      url("${BG}") center 70% / cover no-repeat, #10301e;
   }
   .brand { display: flex; align-items: center; gap: 14px; font-family: Anton, Impact, sans-serif; font-size: 66px; text-transform: uppercase; letter-spacing: .01em; }
   .brand b { color: #f0ff2a; font-weight: 400; }
