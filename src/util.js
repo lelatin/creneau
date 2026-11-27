@@ -75,7 +75,7 @@ export function slugify(s) {
 
 export const RESERVED_SLUGS = new Set([
   'tableau', 'connexion', 'inscription', 'deconnexion', 'seances', 'profil',
-  'r', 'admin', 'api', 'static', 'style.css', 'favicon.ico', 'aide', 'tarifs',
+  'r', 'admin', 'api', 'static', 'style.css', 'favicon.ico', 'aide', 'tarifs', 'questionnaire', 'img',
 ]);
 
 export function isValidSlug(s) {

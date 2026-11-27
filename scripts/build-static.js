@@ -61,7 +61,8 @@ function mapPath(p, { form = false } = {}) {
   if (/^\/style\.css\?v=\w+$/.test(p)) return p.slice(1); // garde l'empreinte du style
   p = p.replace(/[?#].*$/, '') || '/';
   if (p === '/') return 'index.html';
-  if (p === '/style.css' || p === '/taki.svg' || /^\/img\/[a-z0-9-]+\.jpg$/.test(p)) return p.slice(1);
+  if (p === '/style.css' || p === '/taki.svg' || /^\/img\/[a-z0-9-]+\.(jpg|png|svg)$/.test(p)) return p.slice(1);
+  if (p === '/questionnaire') return 'questionnaire.html';
   if (p === '/connexion' || p === '/inscription') return form ? 'tableau.html' : `${p.slice(1)}.html`;
   if (p === '/deconnexion') return 'index.html';
   if (p === '/tableau' || p === '/profil') return form ? 'tableau.html' : `${p.slice(1)}.html`;
@@ -87,14 +88,17 @@ document.addEventListener('submit', (e) => {
 });
 </script>`;
 
-function staticize(htmlText) {
-  return htmlText
+// demo : bandeau d'aperçu + formulaires détournés. false pour une vraie page
+// (le questionnaire des lieux, qui envoie réellement ses réponses).
+function staticize(htmlText, { demo = true } = {}) {
+  const out = htmlText
     .replace(/(href|action|src)="((?:https?:\/\/[^"]*)?\/[^"]*)"/g, (all, attr, url) => {
       if (/^https?:/.test(url) && !url.startsWith(PUBLIC_BASE)) return all; // liens externes (polices…)
       return `${attr}="${mapPath(url, { form: attr === 'action' })}"`;
-    })
-    .replace(/<body([^>]*)>/, `<body$1>\n${banner}`)
-    .replace('</body>', `${previewScript}\n</body>`);
+    });
+  return demo
+    ? out.replace(/<body([^>]*)>/, `<body$1>\n${banner}`).replace('</body>', `${previewScript}\n</body>`)
+    : out;
 }
 
 const pages = {
@@ -107,6 +111,7 @@ const pages = {
   'profil.html': (await get('/profil', cookie)).text,
   'nouvelle-seance.html': (await get('/seances/nouvelle', cookie)).text,
   '404.html': (await get('/page-introuvable')).text,
+  'questionnaire.html': (await get('/questionnaire')).text,
 };
 for (const id of publicIds) pages[`reservation-${id}.html`] = (await get(`/${SLUG}/${id}`)).text;
 for (const id of classIds) pages[`seance-${id}.html`] = (await get(`/seances/${id}`, cookie)).text;
@@ -126,7 +131,7 @@ fs.mkdirSync(OUT);
 // La page 404 peut être servie à n'importe quelle adresse : ses liens partent de la racine du site.
 const sitePath = new URL(PUBLIC_BASE).pathname.replace(/\/?$/, '/');
 for (const [file, content] of Object.entries(pages)) {
-  let out = staticize(content);
+  let out = staticize(content, { demo: file !== 'questionnaire.html' });
   if (file === '404.html') out = out.replace('<head>', `<head>\n<base href="${sitePath}">`);
   fs.writeFileSync(path.join(OUT, file), out);
 }

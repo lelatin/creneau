@@ -61,6 +61,16 @@ Les pull requests lancent seulement les tests et la génération, sans publier.
 
 Les données sont fictives et les formulaires mènent à la page suivante sans rien enregistrer.
 
+### Questionnaire pour les lieux
+
+Une page autonome à donner aux gérant·e·s de lieux : **https://lelatin.github.io/creneau/questionnaire.html**
+(adresse locale : `/questionnaire`). Ils la remplissent sur leur téléphone ; le bouton d'envoi ouvre leur
+messagerie avec les réponses déjà rédigées, adressées à l'adresse réglée en haut de `src/questionnaire.js`.
+Rien n'est stocké par Créneau : un brouillon reste dans le navigateur jusqu'à l'envoi.
+
+L'affiche à imprimer ou partager (QR code) est dans `public/img/affiche-questionnaire.png`, le QR code seul
+dans `public/img/qr-questionnaire.svg`. Pour les refaire : `node scripts/make-poster.js` (il faut Microsoft Edge).
+
 ### Variables d'environnement
 
 | Variable   | Rôle                                           | Défaut                  |
