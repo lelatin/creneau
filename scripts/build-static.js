@@ -59,7 +59,7 @@ const SLUG = 'camille-yoga';
 function mapPath(p, { form = false } = {}) {
   p = p.replace(PUBLIC_BASE, '').replace(/[?#].*$/, '') || '/';
   if (p === '/') return 'index.html';
-  if (p === '/style.css' || p === '/taki.svg') return p.slice(1);
+  if (p === '/style.css' || p === '/taki.svg' || /^\/img\/[a-z0-9-]+\.jpg$/.test(p)) return p.slice(1);
   if (p === '/connexion' || p === '/inscription') return form ? 'tableau.html' : `${p.slice(1)}.html`;
   if (p === '/deconnexion') return 'index.html';
   if (p === '/tableau' || p === '/profil') return form ? 'tableau.html' : `${p.slice(1)}.html`;
@@ -87,7 +87,7 @@ document.addEventListener('submit', (e) => {
 
 function staticize(htmlText) {
   return htmlText
-    .replace(/(href|action)="((?:https?:\/\/[^"]*)?\/[^"]*)"/g, (all, attr, url) => {
+    .replace(/(href|action|src)="((?:https?:\/\/[^"]*)?\/[^"]*)"/g, (all, attr, url) => {
       if (/^https?:/.test(url) && !url.startsWith(PUBLIC_BASE)) return all; // liens externes (polices…)
       return `${attr}="${mapPath(url, { form: attr === 'action' })}"`;
     })
@@ -129,6 +129,7 @@ for (const [file, content] of Object.entries(pages)) {
   fs.writeFileSync(path.join(OUT, file), out);
 }
 fs.copyFileSync(path.join(root, 'public', 'style.css'), path.join(OUT, 'style.css'));
+fs.cpSync(path.join(root, 'public', 'img'), path.join(OUT, 'img'), { recursive: true });
 fs.writeFileSync(path.join(OUT, 'taki.svg'), (await get('/taki.svg')).text);
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
 

@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { q, db } from './db.js';
@@ -17,6 +17,10 @@ const BASE_URL = () => (process.env.BASE_URL || `http://localhost:${PORT}`).repl
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const CSS = readFileSync(path.join(here, '..', 'public', 'style.css'));
+// Photos du site (public/img), chargées une fois au démarrage
+const IMG_DIR = path.join(here, '..', 'public', 'img');
+const IMAGES = new Map(readdirSync(IMG_DIR).filter((f) => /^[a-z0-9-]+\.jpg$/.test(f))
+  .map((f) => [f, readFileSync(path.join(IMG_DIR, f))]));
 
 const FLASH = {
   cree: 'Séance créée. Elle est visible sur votre page.',
@@ -337,6 +341,11 @@ export function createServer() {
       if (req.method === 'GET' && url.pathname === '/taki.svg') {
         res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' });
         return res.end(faviconSvg);
+      }
+      const img = req.method === 'GET' && url.pathname.match(/^\/img\/([a-z0-9-]+\.jpg)$/);
+      if (img && IMAGES.has(img[1])) {
+        res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' });
+        return res.end(IMAGES.get(img[1]));
       }
       const teacher = currentTeacher(req);
       let body = {};
