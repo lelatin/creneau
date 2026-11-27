@@ -26,9 +26,10 @@ Le prof crée ses séances et partage **un seul lien**. Les élèves réservent 
 
 ## Identité visuelle
 
-Léger et aérien : fond blanc cassé, citron vert `#F0FF2A` en couleur principale, vert forêt `#1F3A26`
-en contrepoint, contours à l'encre façon dessin. La police est Bricolage Grotesque (servie par Bunny Fonts,
-hébergé en Europe, sans traçage).
+Éditoriale, calme et un brin malicieuse : fond papier, grands titres en serif fin (Instrument Serif),
+petites étiquettes façon machine à écrire [entre crochets] (DM Mono), texte en Instrument Sans,
+listes séparées par des filets, papiers colorés posés de travers (sauge, bleu poudré, sable) et une touche
+de citron vert. Les polices sont servies par Bunny Fonts (hébergé en Europe, sans traçage).
 
 **Taki** est la mascotte : une petite graine sereine, une pousse à deux feuilles sur la tête, dessinée d'un trait
 d'encre avec des membres épais au contour, en postures de yoga. C'est lui qui « s'occupe de tout » (inscriptions,
@@ -43,18 +44,20 @@ Il faut seulement [Node.js](https://nodejs.org) 22.13 ou plus récent. Aucune d�
 npm run demo     # démo avec données fictives : http://localhost:3000/camille-yoga
 npm start        # version "vide" : http://localhost:3000
 npm test         # tests automatiques
-npm run build:static   # régénère la version publique statique dans docs/
+npm run build:static   # génère l'aperçu statique dans docs/ (pour le regarder en local)
 ```
 
 Compte de démo : `demo@creneau.test` / `demo1234`
 
 ### Version publique (aperçu statique)
 
-Le dossier `docs/` contient un aperçu cliquable de l'appli, en pages HTML fixes, publiable sur GitHub Pages
-(Settings → Pages → branche `main`, dossier `/docs`) : https://lelatin.github.io/creneau/
+Un aperçu cliquable de l'appli est en ligne : **https://lelatin.github.io/creneau/**
+
+À chaque push sur `main`, GitHub Actions (`.github/workflows/pages.yml`) lance les tests, génère l'aperçu
+en pages HTML fixes (`npm run build:static` → `docs/`, non versionné) et le publie sur GitHub Pages.
+Les pull requests lancent seulement les tests et la génération, sans publier.
 
 Les données sont fictives et les formulaires mènent à la page suivante sans rien enregistrer.
-Après une modification de l'interface, relancez `npm run build:static` et commitez `docs/`.
 
 ### Variables d'environnement
 
