@@ -30,7 +30,9 @@ Léger et aérien : fond blanc cassé, citron vert `#F0FF2A` en couleur principa
 en contrepoint, contours à l'encre façon dessin. La police est Bricolage Grotesque (servie par Bunny Fonts,
 hébergé en Europe, sans traçage).
 
-**Taki** est la mascotte : c'est lui qui « s'occupe de tout » (inscriptions, confirmations, places).
+**Taki** est la mascotte : une petite graine sereine, une pousse à deux feuilles sur la tête, dessinée d'un trait
+d'encre avec des membres épais au contour, en postures de yoga. C'est lui qui « s'occupe de tout » (inscriptions,
+confirmations, places).
 Il apparaît sur l'accueil, le tableau de bord, les états vides, la confirmation de réservation et la 404.
 
 ## Lancer le projet
@@ -41,9 +43,18 @@ Il faut seulement [Node.js](https://nodejs.org) 22.13 ou plus récent. Aucune d�
 npm run demo     # démo avec données fictives : http://localhost:3000/camille-yoga
 npm start        # version "vide" : http://localhost:3000
 npm test         # tests automatiques
+npm run build:static   # régénère la version publique statique dans docs/
 ```
 
 Compte de démo : `demo@creneau.test` / `demo1234`
+
+### Version publique (aperçu statique)
+
+Le dossier `docs/` contient un aperçu cliquable de l'appli, en pages HTML fixes, publiable sur GitHub Pages
+(Settings → Pages → branche `main`, dossier `/docs`) : https://lelatin.github.io/creneau/
+
+Les données sont fictives et les formulaires mènent à la page suivante sans rien enregistrer.
+Après une modification de l'interface, relancez `npm run build:static` et commitez `docs/`.
 
 ### Variables d'environnement
 
@@ -64,6 +75,7 @@ Volontairement minimal pour aller vite et rester facile à héberger :
 src/server.js   routes et logique
 src/views.js    pages HTML
 src/taki.js     Taki, la mascotte (SVG dessiné à la main, 6 poses)
+scripts/build-static.js   génère l'aperçu statique docs/
 src/db.js       schéma et requêtes SQLite
 src/auth.js     comptes et sessions
 src/mail.js     envoi d'emails (à brancher sur un vrai fournisseur)
