@@ -6,6 +6,7 @@ import { q, db } from './db.js';
 import { currentTeacher, startSession, endSession, hashPassword, verifyPassword, newToken } from './auth.js';
 import { sendEmail } from './mail.js';
 import * as V from './views.js';
+import { questionnaire } from './questionnaire.js';
 import { faviconSvg } from './taki.js';
 import {
   nowParis, todayParis, addDays, fmtDate, fmtTime, fmtPrice, parsePrice,
@@ -17,9 +18,10 @@ const BASE_URL = () => (process.env.BASE_URL || `http://localhost:${PORT}`).repl
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const CSS = readFileSync(path.join(here, '..', 'public', 'style.css'));
-// Photos du site (public/img), chargées une fois au démarrage
+// Images du site (public/img : photos, affiche, QR code), chargées une fois au démarrage
 const IMG_DIR = path.join(here, '..', 'public', 'img');
-const IMAGES = new Map(readdirSync(IMG_DIR).filter((f) => /^[a-z0-9-]+\.jpg$/.test(f))
+const IMG_TYPES = { jpg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml' };
+const IMAGES = new Map(readdirSync(IMG_DIR).filter((f) => /^[a-z0-9-]+\.(jpg|png|svg)$/.test(f))
   .map((f) => [f, readFileSync(path.join(IMG_DIR, f))]));
 
 const FLASH = {
@@ -284,6 +286,9 @@ function publicClass(slug, id) {
   return { teacher, c };
 }
 
+// Questionnaire pour les gérants de lieux (page autonome, à partager par QR code)
+route('GET', '/questionnaire', ({ res }) => send(res, 200, questionnaire()));
+
 route('GET', '/(?<slug>[a-z0-9-]+)', ({ res, params }) => {
   const teacher = q.teacherBySlug.get(params.slug);
   if (!teacher) return send(res, 404, V.notFound());
@@ -342,9 +347,9 @@ export function createServer() {
         res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' });
         return res.end(faviconSvg);
       }
-      const img = req.method === 'GET' && url.pathname.match(/^\/img\/([a-z0-9-]+\.jpg)$/);
+      const img = req.method === 'GET' && url.pathname.match(/^\/img\/([a-z0-9-]+\.(jpg|png|svg))$/);
       if (img && IMAGES.has(img[1])) {
-        res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' });
+        res.writeHead(200, { 'Content-Type': IMG_TYPES[img[2]], 'Cache-Control': 'public, max-age=86400' });
         return res.end(IMAGES.get(img[1]));
       }
       const teacher = currentTeacher(req);
